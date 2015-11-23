@@ -24,6 +24,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
@@ -129,10 +130,19 @@ public class BackgroundDownload extends CordovaPlugin {
     HashMap<String, Download> activDownloads = new HashMap<String, Download>();
 
     @Override
-    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+    public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
         try {
             if (action.equals("startAsync")) {
-                startAsync(args, callbackContext);
+                cordova.getThreadPool().execute(new Runnable() {
+                    public void run() {
+                        try {
+                            startAsync(args, callbackContext);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
                 return true;
             }
             if (action.equals("stop")) {
@@ -418,6 +428,11 @@ public class BackgroundDownload extends CordovaPlugin {
             curDownload.getCallbackContextDownloadStart().success();
         } else {
             curDownload.getCallbackContextDownloadStart().error("Cannot copy from temporary path to actual path");
+<<<<<<< HEAD
+=======
+            Log.e("BackgroundDownload", "Error occurred while copying the file");
+            e.printStackTrace();
+>>>>>>> ec72a51... Add permission and use thread
         }
     }
 }
