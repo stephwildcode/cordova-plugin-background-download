@@ -19,6 +19,10 @@
 package org.apache.cordova.backgroundDownload;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -39,6 +43,11 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.net.Uri;
+
+import android.os.Build;
+import android.os.Environment;
+import android.util.Log;
+import android.util.Log;
 
 /**
  * Based on DownloadManager which is intended to be used for long-running HTTP downloads. Support of Android 2.3. (API 9) and later
@@ -133,15 +142,16 @@ public class BackgroundDownload extends CordovaPlugin {
     public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
         try {
             if (action.equals("startAsync")) {
-                cordova.getThreadPool().execute(new Runnable() {
-                    public void run() {
-                        try {
-                            startAsync(args, callbackContext);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+                startAsync(args, callbackContext);
+                // cordova.getThreadPool().execute(new Runnable() {
+                //     public void run() {
+                //         try {
+                //             startAsync(args, callbackContext);
+                //         } catch (JSONException e) {
+                //             e.printStackTrace();
+                //         }
+                //     }
+                // });
 
                 return true;
             }
@@ -157,10 +167,7 @@ public class BackgroundDownload extends CordovaPlugin {
     }
 
     private void startAsync(JSONArray args, CallbackContext callbackContext) throws JSONException {
-<<<<<<< HEAD
-=======
 
->>>>>>> ce6d4d8... Fix download hold-up issue with Android 6
         if (activDownloads.size() == 0) {
             // required to receive notification when download is completed
             Log.d("BackgroundDownload", "Registering the receiver");
@@ -191,10 +198,9 @@ public class BackgroundDownload extends CordovaPlugin {
             targetFile.delete();
 
             DownloadManager mgr = (DownloadManager) this.cordova.getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
-<<<<<<< HEAD
-            DownloadManager.Request request = new DownloadManager.Request(source);
+            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(curDownload.getUriString()));            
             String title = "org.apache.cordova.backgroundDownload plugin";
-
+ 
             if (args.length() >= 3) {
                 title = args.get(2).toString();
             }
@@ -202,22 +208,11 @@ public class BackgroundDownload extends CordovaPlugin {
             request.setTitle(title);
             request.setVisibleInDownloadsUi(false);
 
-            // hide notification. Not compatible with current android api.
-            // request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
+            // if (Build.VERSION.SDK_INT >= 11) {
+            //     request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
+            // }
 
-            // we use default settings for roaming and network type
-            // request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
-            // request.setAllowedOverRoaming(false);
 
-=======
-            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(curDownload.getUriString()));
-            request.setTitle("org.apache.cordova.backgroundDownload plugin");
-            request.setVisibleInDownloadsUi(false);
-            if (Build.VERSION.SDK_INT >= 11) {
-                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
-            }
-
->>>>>>> ce6d4d8... Fix download hold-up issue with Android 6
             request.setDestinationUri(Uri.parse(curDownload.getTempFilePath()));
             Log.d("BackgroundDownload", "downloading");
             curDownload.setDownloadId(mgr.enqueue(request));
@@ -300,33 +295,60 @@ public class BackgroundDownload extends CordovaPlugin {
     private String getUserFriendlyReason(int reason) {
         String failedReason = "";
         switch (reason) {
-        case DownloadManager.ERROR_CANNOT_RESUME:
-            failedReason = "ERROR_CANNOT_RESUME";
-            break;
-        case DownloadManager.ERROR_DEVICE_NOT_FOUND:
-            failedReason = "ERROR_DEVICE_NOT_FOUND";
-            break;
-        case DownloadManager.ERROR_FILE_ALREADY_EXISTS:
-            failedReason = "ERROR_FILE_ALREADY_EXISTS";
-            break;
-        case DownloadManager.ERROR_FILE_ERROR:
-            failedReason = "ERROR_FILE_ERROR";
-            break;
-        case DownloadManager.ERROR_HTTP_DATA_ERROR:
-            failedReason = "ERROR_HTTP_DATA_ERROR";
-            break;
-        case DownloadManager.ERROR_INSUFFICIENT_SPACE:
-            failedReason = "ERROR_INSUFFICIENT_SPACE";
-            break;
-        case DownloadManager.ERROR_TOO_MANY_REDIRECTS:
-            failedReason = "ERROR_TOO_MANY_REDIRECTS";
-            break;
-        case DownloadManager.ERROR_UNHANDLED_HTTP_CODE:
-            failedReason = "ERROR_UNHANDLED_HTTP_CODE";
-            break;
-        case DownloadManager.ERROR_UNKNOWN:
-            failedReason = "ERROR_UNKNOWN";
-            break;
+            case DownloadManager.ERROR_CANNOT_RESUME:
+                failedReason = "ERROR_CANNOT_RESUME";
+                break;
+            case DownloadManager.ERROR_DEVICE_NOT_FOUND:
+                failedReason = "ERROR_DEVICE_NOT_FOUND";
+                break;
+            case DownloadManager.ERROR_FILE_ALREADY_EXISTS:
+                failedReason = "ERROR_FILE_ALREADY_EXISTS";
+                break;
+            case DownloadManager.ERROR_FILE_ERROR:
+                failedReason = "ERROR_FILE_ERROR";
+                break;
+            case DownloadManager.ERROR_HTTP_DATA_ERROR:
+                failedReason = "ERROR_HTTP_DATA_ERROR";
+                break;
+            case DownloadManager.ERROR_INSUFFICIENT_SPACE:
+                failedReason = "ERROR_INSUFFICIENT_SPACE";
+                break;
+            case DownloadManager.ERROR_TOO_MANY_REDIRECTS:
+                failedReason = "ERROR_TOO_MANY_REDIRECTS";
+                break;
+            case DownloadManager.ERROR_UNHANDLED_HTTP_CODE:
+                failedReason = "ERROR_UNHANDLED_HTTP_CODE";
+                break;
+            case DownloadManager.ERROR_UNKNOWN:
+                failedReason = "ERROR_UNKNOWN";
+                break;
+            case DownloadManager.ERROR_CANNOT_RESUME:
+                 failedReason = "ERROR_CANNOT_RESUME";
+                 break;
+            case DownloadManager.ERROR_DEVICE_NOT_FOUND:
+                 failedReason = "ERROR_DEVICE_NOT_FOUND";
+                 break;
+            case DownloadManager.ERROR_FILE_ALREADY_EXISTS:
+                 failedReason = "ERROR_FILE_ALREADY_EXISTS";
+                 break;
+            case DownloadManager.ERROR_FILE_ERROR:
+                 failedReason = "ERROR_FILE_ERROR";
+                 break;
+            case DownloadManager.ERROR_HTTP_DATA_ERROR:
+                 failedReason = "ERROR_HTTP_DATA_ERROR";
+                 break;
+            case DownloadManager.ERROR_INSUFFICIENT_SPACE:
+                 failedReason = "ERROR_INSUFFICIENT_SPACE";
+                 break;
+            case DownloadManager.ERROR_TOO_MANY_REDIRECTS:
+                 failedReason = "ERROR_TOO_MANY_REDIRECTS";
+                 break;
+            case DownloadManager.ERROR_UNHANDLED_HTTP_CODE:
+                 failedReason = "ERROR_UNHANDLED_HTTP_CODE";
+                 break;
+            case DownloadManager.ERROR_UNKNOWN:
+                 failedReason = "ERROR_UNKNOWN";
+                 break;
         }
 
         return failedReason;
@@ -350,7 +372,7 @@ public class BackgroundDownload extends CordovaPlugin {
         long downloadId = DOWNLOAD_ID_UNDEFINED;
 
         DownloadManager.Query query = new DownloadManager.Query();
-        query.setFilterByStatus(DownloadManager.STATUS_PAUSED | DownloadManager.STATUS_PENDING | DownloadManager.STATUS_RUNNING    | DownloadManager.STATUS_SUCCESSFUL);
+        query.setFilterByStatus(DownloadManager.STATUS_PAUSED | DownloadManager.STATUS_PENDING | DownloadManager.STATUS_RUNNING | DownloadManager.STATUS_SUCCESSFUL);
         Cursor cur = mgr.query(query);
         int idxId = cur.getColumnIndex(DownloadManager.COLUMN_ID);
         int idxUri = cur.getColumnIndex(DownloadManager.COLUMN_URI);
@@ -442,37 +464,15 @@ public class BackgroundDownload extends CordovaPlugin {
     public void copyTempFileToActualFile(Download curDownload) {
         File sourceFile = new File(Uri.parse(curDownload.getTempFilePath()).getPath());
         File destFile = new File(Uri.parse(curDownload.getFilePath()).getPath());
-<<<<<<< HEAD
-        if (sourceFile.renameTo(destFile)) {
-            curDownload.getCallbackContextDownloadStart().success();
-        } else {
-=======
 
         if (! sourceFile.exists()) return;
 
-        try {
+        try {            
             copyFile(sourceFile, destFile);
-
-            // Remove the temporary download directory from the external storage
-            File tmpDir = new File(TEMP_DOWNLOAD_PATH);
-            deleteRecursive(tmpDir);
-
-            // We rename tmpDir before deleting it to prevent Android filesystem from keeping
-            // a reference to the old directory and locking it after deletion.
-            // http://stackoverflow.com/questions/11539657/open-failed-ebusy-device-or-resource-busy
-            // Not used at the moment because doing so holds up the download in Android 6
-//            final File renamedTmpDir = new File(tmpDir.getAbsolutePath() + System.currentTimeMillis());
-//            tmpDir.renameTo(renamedTmpDir);
-//            deleteRecursive(renamedTmpDir);
-
         } catch (IOException e) {
->>>>>>> ce6d4d8... Fix download hold-up issue with Android 6
             curDownload.getCallbackContextDownloadStart().error("Cannot copy from temporary path to actual path");
-<<<<<<< HEAD
-=======
             Log.e("BackgroundDownload", "Error occurred while copying the file");
             e.printStackTrace();
->>>>>>> ec72a51... Add permission and use thread
         }
     }
 }
