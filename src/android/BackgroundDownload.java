@@ -171,7 +171,18 @@ public class BackgroundDownload extends CordovaPlugin {
 
             DownloadManager mgr = (DownloadManager) this.cordova.getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
             DownloadManager.Request request = new DownloadManager.Request(source);
-            request.setTitle("org.apache.cordova.backgroundDownload plugin");
+
+            // Use the cookie from the webview, so the session cookie is shared
+            request.addRequestHeader("Cookie", this.webView.getCookieManager().getCookie(curDownload.getUriString()));
+
+            try {
+                // Get the app label and set it as the title
+                int appLabelResId = this.webView.getContext().getApplicationInfo().labelRes;
+                request.setTitle(this.webView.getContext().getString(appLabelResId));
+            } catch (Resources.NotFoundException e) {
+                // Use generic title if the app label wasn't found
+                request.setTitle("Background download plugin");
+            }
             request.setVisibleInDownloadsUi(false);
 
             // hide notification. Not compatible with current android api.
