@@ -475,5 +475,20 @@ public class BackgroundDownload extends CordovaPlugin {
             e.printStackTrace();
         }
     }
+
+    private void copyFile(File src, File dest) throws IOException {
+        FileChannel inChannel = new FileInputStream(src).getChannel();
+        FileChannel outChannel = new FileOutputStream(dest).getChannel();
+        try {
+            inChannel.transferTo(0, inChannel.size(), outChannel);
+        } finally {
+            if (inChannel != null) {
+                inChannel.close();
+            }
+            if (outChannel != null) {
+                outChannel.close();
+            }
+        }
+    }
 }
 
