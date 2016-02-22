@@ -322,33 +322,6 @@ public class BackgroundDownload extends CordovaPlugin {
             case DownloadManager.ERROR_UNKNOWN:
                 failedReason = "ERROR_UNKNOWN";
                 break;
-            case DownloadManager.ERROR_CANNOT_RESUME:
-                 failedReason = "ERROR_CANNOT_RESUME";
-                 break;
-            case DownloadManager.ERROR_DEVICE_NOT_FOUND:
-                 failedReason = "ERROR_DEVICE_NOT_FOUND";
-                 break;
-            case DownloadManager.ERROR_FILE_ALREADY_EXISTS:
-                 failedReason = "ERROR_FILE_ALREADY_EXISTS";
-                 break;
-            case DownloadManager.ERROR_FILE_ERROR:
-                 failedReason = "ERROR_FILE_ERROR";
-                 break;
-            case DownloadManager.ERROR_HTTP_DATA_ERROR:
-                 failedReason = "ERROR_HTTP_DATA_ERROR";
-                 break;
-            case DownloadManager.ERROR_INSUFFICIENT_SPACE:
-                 failedReason = "ERROR_INSUFFICIENT_SPACE";
-                 break;
-            case DownloadManager.ERROR_TOO_MANY_REDIRECTS:
-                 failedReason = "ERROR_TOO_MANY_REDIRECTS";
-                 break;
-            case DownloadManager.ERROR_UNHANDLED_HTTP_CODE:
-                 failedReason = "ERROR_UNHANDLED_HTTP_CODE";
-                 break;
-            case DownloadManager.ERROR_UNKNOWN:
-                 failedReason = "ERROR_UNKNOWN";
-                 break;
         }
 
         return failedReason;
