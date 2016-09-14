@@ -33,11 +33,11 @@
         this._chainedDefer = null;
         this._state = 'pending'; // -> 'resolved' or 'rejected' or 'cancelled'
         this.result = null; // represents error or result depending on _state
-    };
+    }
     
     function Deferral() {
         this.promise = new Promise();
-    };
+    }
 
     Promise.Deferral = Deferral;
 
