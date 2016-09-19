@@ -23,7 +23,7 @@ API provides an advanced file download functionality that persists beyond app te
 
 **Supported platforms**
  
- * Windows8
+ * Windows
  * Windows Phone8
  * iOS 7.0 or later
  * Android
