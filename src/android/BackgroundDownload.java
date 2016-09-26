@@ -199,7 +199,7 @@ public class BackgroundDownload extends CordovaPlugin {
             targetFile.delete();
 
             DownloadManager mgr = (DownloadManager) this.cordova.getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
-            DownloadManager.Request request = new DownloadManager.Request(source);
+            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(curDownload.getUriString()));
 
             // Use the cookie from the webview, so the session cookie is shared
             request.addRequestHeader("Cookie", this.webView.getCookieManager().getCookie(curDownload.getUriString()));
