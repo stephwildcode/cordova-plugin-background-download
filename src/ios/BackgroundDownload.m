@@ -25,8 +25,6 @@
 }
 
 @synthesize session;
-//@synthesize downloadTask;
-
 
 -(DownloadHolder*) holderWithUrl:(NSString* ) downloadUri {
     if(_downloadList) {
@@ -89,30 +87,6 @@
                     }
                 }
     }];
-    
-//    self.targetFile = [command.arguments objectAtIndex:1];
-//    
-//    self.callbackId = command.callbackId;
-    
-    
-    
- 
-    
-//    session = [self backgroundSession];
-//    
-//    Download * download = [[Download alloc] init];
-//    download.url = 
-//    
-//    [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-//        if (downloadTasks.count > 0) {
-//            downloadTask = downloadTasks[0];
-//        } else {
-//            downloadTask = [session downloadTaskWithRequest:request];
-//            objc_setAssociatedObject(downloadTask, @"callbackId", command.callbackId, OBJC_ASSOCIATION_COPY);
-//        }
-//        [downloadTask resume];
-//    }];
-    
 }
 
 - (NSURLSession *)backgroundSession
@@ -122,7 +96,7 @@
     dispatch_once(&onceToken, ^{
         NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfiguration:@"com.cordova.plugin.BackgroundDownload.BackgroundSession"];
         backgroundSession = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
-        [backgroundSession invalidateAndCancel];
+        //[backgroundSession invalidateAndCancel];
     });
     return backgroundSession;
 }
@@ -138,7 +112,6 @@
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Arg was null"];
     }
     
-    //[downloadTask cancel];
     DownloadHolder * holder = [self holderWithUrl:myarg];
     if(holder){
         if(holder.downloadTask.state == NSURLSessionTaskStateCompleted) {
@@ -169,7 +142,6 @@
 }
 
 -(void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error {
-
     
     if (ignoreNextError) {
         ignoreNextError = NO;
@@ -185,9 +157,6 @@
             // this happens when application is closed when there is pending download, so we try to resume it
             if (resumeData != nil) {
                 ignoreNextError = YES;
-//                [downloadTask cancel];
-//                downloadTask = [self.session downloadTaskWithResumeData:resumeData];
-//                [downloadTask resume];
                 return;
             }
         }
@@ -197,7 +166,6 @@
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId: holder.callbackId];
     }
-    //删除
     @synchronized (_downloadList) {
         [_downloadList removeObjectForKey:holder.downloadUri];
     }
@@ -209,7 +177,6 @@
         NSLog(@"didFinishDownloadingToURL %@", holder.downloadUri);
         NSFileManager *fileManager = [NSFileManager defaultManager];
     
-        //NSURL *targetURL = [NSURL URLWithString:_targetFile];
         NSURL *targetURL = [NSURL URLWithString:holder.targetFile];
     
         [fileManager removeItemAtPath:targetURL.path error: nil];
@@ -219,6 +186,5 @@
 @end
 
 @implementation DownloadHolder
-
 
 @end
