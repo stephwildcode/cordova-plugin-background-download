@@ -33,7 +33,10 @@
     
     self.callbackId = command.callbackId;
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:self.downloadUri]];
+    NSURL *url = [NSURL URLWithString: [[self.downloadUri stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding]
+                                        stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:url];
     
     ignoreNextError = NO;
     
