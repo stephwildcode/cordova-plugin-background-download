@@ -89,17 +89,27 @@
     }];
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 - (NSURLSession *)backgroundSession
 {
     static NSURLSession *backgroundSession = nil;
     static dispatch_once_t onceToken;
+    
+    NSURLSessionConfiguration *config;
+    BOOL iOS8OrNewer = [[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0;
+    if (iOS8OrNewer) {
+        config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@"com.cordova.plugin.BackgroundDownload.BackgroundSession"];
+    } else {
+        config = [NSURLSessionConfiguration backgroundSessionConfiguration:@"com.cordova.plugin.BackgroundDownload.BackgroundSession"];
+    }
+    
     dispatch_once(&onceToken, ^{
-        NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfiguration:@"com.cordova.plugin.BackgroundDownload.BackgroundSession"];
         backgroundSession = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
-        //[backgroundSession invalidateAndCancel];
     });
     return backgroundSession;
 }
+#pragma GCC diagnostic pop
 
 - (void)stop:(CDVInvokedUrlCommand*)command
 {
