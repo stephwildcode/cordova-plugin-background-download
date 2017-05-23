@@ -1,0 +1,26 @@
+{
+  "name": "cordova-plugin-background-download",
+  "version": "0.1.2",
+  "description": "Cordova Background Download Plugin",
+  "cordova": {
+    "id": "cordova-plugin-background-download",
+    "platforms": [
+      "windows",
+      "ios",
+      "android",
+      "wp8"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dualinventive/cordova-plugin-background-download.git"
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova",
+    "background",
+    "download"
+  ],
+  "author": "various",
+  "license": "Apache License"
+}
