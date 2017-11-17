@@ -172,7 +172,18 @@
         }
         CDVPluginResult* errorResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[error localizedDescription]];
         [self.commandDelegate sendPluginResult:errorResult callbackId: holder.callbackId];
-    } else {
+    } else if ([[task response] isKindOfClass:[NSHTTPURLResponse class]]) {
+		NSInteger statusCode = [(NSHTTPURLResponse *)[task response] statusCode];
+
+		if (statusCode != 200) {
+		  NSDictionary* dictionary = @{@"statusCode": [NSNumber numberWithInt:statusCode]};
+		  CDVPluginResult* errorResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:dictionary];
+		  [self.commandDelegate sendPluginResult:errorResult callbackId:self.callbackId];
+		} else {
+		  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+		  [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+		}
+	} else {
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId: holder.callbackId];
     }

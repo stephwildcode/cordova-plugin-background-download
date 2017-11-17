@@ -426,7 +426,10 @@ public class BackgroundDownload extends CordovaPlugin {
                         copyTempFileToActualFile(curDownload);
                         curDownload.getCallbackContextDownloadStart().success();
                     } else {
-                        curDownload.getCallbackContextDownloadStart().error("Download operation failed with status " + status + " and reason: "    + getUserFriendlyReason(reason));
+                        JSONObject message = new JSONObject();
+                        message.put("statusCode", reason);
+
+                        curDownload.getCallbackContextDownloadStart().sendPluginResult(new PluginResult(PluginResult.Status.ERROR, message));
                     }
                 } else {
                     curDownload.getCallbackContextDownloadStart().error("cancelled or terminated");
