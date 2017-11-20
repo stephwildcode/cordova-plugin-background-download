@@ -21,10 +21,17 @@ API provides an advanced file download functionality that persists beyond app te
             });
         });
 
+**onError**
+
+* This callback now returns an object with the http status code if the process failed on the actual downloading of the file. The object will look like this for instance if the server returns a **500** status code:
+		
+		 {
+		   statusCode: 500
+		 } 
+
 **Supported platforms**
  
  * Windows
- * Windows Phone8
  * iOS 7.0 or later
  * Android
  
