@@ -178,10 +178,10 @@
 		if (statusCode != 200) {
 		  NSDictionary* dictionary = @{@"statusCode": [NSNumber numberWithInt:statusCode]};
 		  CDVPluginResult* errorResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:dictionary];
-		  [self.commandDelegate sendPluginResult:errorResult callbackId:self.callbackId];
+		  [self.commandDelegate sendPluginResult:errorResult callbackId: holder.callbackId];
 		} else {
 		  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-		  [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+		  [self.commandDelegate sendPluginResult:pluginResult callbackId: holder.callbackId];
 		}
 	} else {
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
