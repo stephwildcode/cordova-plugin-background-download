@@ -35,9 +35,10 @@ var BackgroundDownloader = function() {
  * @param {string} uri The location of the resource.
  * @param {File} resultFile The file that the response will be written to.
  * @param {string} appTitle The title of the app, which will be shown in notification
+ * @param {string} userAgent A custom user agent. Windows only. The default Edge user agent will be used if not specified.
  */
-BackgroundDownloader.prototype.createDownload = function(uri, resultFile, appTitle) {
-    return new DownloadOperation(uri, resultFile, appTitle);
+BackgroundDownloader.prototype.createDownload = function(uri, resultFile, appTitle, userAgent) {
+    return new DownloadOperation(uri, resultFile, appTitle, userAgent);
 };
 
 module.exports = BackgroundDownloader;

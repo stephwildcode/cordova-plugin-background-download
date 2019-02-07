@@ -28,16 +28,18 @@ var exec = require('cordova/exec'),
  * @param {string} uri The location of the resource.
  * @param {File} resultFile The file that the response will be written to.
  * @param {string} appTitle the title of the app, will be shown in notification
+ * @param {string} userAgent A custom user agent. Windows only. The default Edge user agent will be used if not specified.
  */
-var DownloadOperation = function (uri, resultFile, appTitle) {
+var DownloadOperation = function (uri, resultFile, appTitle, userAgent) {
 
     if (uri == null || resultFile == null) {
         throw new Error("missing or invalid argument");
     }
-    
+
     this.uri = uri;
     this.resultFile = resultFile;
     this.appTitle = appTitle || "org.apache.cordova.backgroundDownload plugin";
+    this.userAgent = userAgent;
 };
 
 /**
@@ -51,7 +53,7 @@ DownloadOperation.prototype.startAsync = function() {
 
             // success callback is used to both report operation progress and 
             // as operation completeness handler
-            
+
             if (result && typeof result.progress != 'undefined') {
                 deferral.notify(result.progress);
             } else {
@@ -62,7 +64,7 @@ DownloadOperation.prototype.startAsync = function() {
             deferral.reject(err);
         };
 
-    exec(successCallback, errorCallback, "BackgroundDownload", "startAsync", [this.uri, this.resultFile.toURL(), this.appTitle]);
+    exec(successCallback, errorCallback, "BackgroundDownload", "startAsync", [this.uri, this.resultFile.toURL(), this.appTitle, this.userAgent]);
 
     // custom mechanism to trigger stop when user cancels pending operation
     deferral.promise.onCancelled = function () {
