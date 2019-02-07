@@ -4,6 +4,11 @@ module.exports = {
             var uri = new Windows.Foundation.Uri(args[0]),
                 resultFilePath = args[1],
                 /**
+                 * A custom user agent. The default Edge user agent will be used if not specified.
+                 * @type {string}
+                 */
+                userAgent = args[3],
+                /**
                  * The download operation.
                  * @type {Windows.Networking.BackgroundTransfer.DownloadOperation}
                  **/
@@ -30,8 +35,16 @@ module.exports = {
                             return downloads[i].attachAsync();
                         }
                     }
+
+                    var downloader = new Windows.Networking.BackgroundTransfer.BackgroundDownloader();
+
+                    // Check if a user agent is supplied and set it on the request if it is
+                    if (userAgent) {
+                        downloader.setRequestHeader("user-agent", userAgent);
+                    }
+
                     // new download
-                    operation = Windows.Networking.BackgroundTransfer.BackgroundDownloader().createDownload(uri, downloadLocation);
+                    operation = downloader.createDownload(uri, downloadLocation);
                     return operation.startAsync();
                 }, fail);
 
