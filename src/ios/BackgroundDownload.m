@@ -6,9 +6,9 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License. You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -58,13 +58,23 @@
         NSString *uri = [command.arguments objectAtIndex:0];
         Download *downloadItem = [activeDownloads valueForKey:uri];
         NSString *uriMatcher = nil;
+        NSArray *headers;
         if (command.arguments.count > 2 &&
             ![[command.arguments objectAtIndex:2] isEqual:[NSNull null]]) {
             uriMatcher = [command.arguments objectAtIndex:2];
         }
+        if (command.arguments.count > 4 &&
+            ![[command.arguments objectAtIndex:4] isEqual:[NSNull null]]) {
+            headers = [command.arguments objectAtIndex:4];
+        }
 
         if (!downloadItem) {
             NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:uri]];
+
+            for (NSDictionary *header in headers) {
+                [request setValue:header["Value"] forHTTPHeaderField:header["Key"]];
+            }
+
             downloadItem = [[Download alloc] initWithPath:[command.arguments objectAtIndex:1]
                                                       uri:uri
                                                uriMatcher:uriMatcher
@@ -147,7 +157,7 @@
             if (!NSEqualRanges(rangeOfNewUrlMatch, NSMakeRange(NSNotFound, 0))) {
                 substringForNewUrlMatch = [downloadItem.uriString substringWithRange:rangeOfNewUrlMatch];
             }
-            
+
             urlMatches = substringForExistingUrlMatch != nil &&
                                 substringForNewUrlMatch != nil &&
                                 [substringForExistingUrlMatch isEqual:substringForNewUrlMatch];

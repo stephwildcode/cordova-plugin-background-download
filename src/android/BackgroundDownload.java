@@ -27,6 +27,8 @@ import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -83,6 +85,7 @@ public class BackgroundDownload extends CordovaPlugin {
         private Uri targetFileUri;
         private Uri tempFileUri;
         private String notificationTitle;
+        private List<Map<String, String>> headers;
         private String uriMatcher;
         private String uriString;
         private CallbackContext callbackContext; // The callback context from which we were invoked.
@@ -101,16 +104,21 @@ public class BackgroundDownload extends CordovaPlugin {
                 notificationTitle = args.getString(3);
             }
 
-            return new Download(args.get(0).toString(), args.get(1).toString(), notificationTitle, uriMatcher,
+            if (args.length() > 4 && !"null".equals(args.getString(4))) {
+                headers = args.get(4);
+            }
+
+            return new Download(args.get(0).toString(), args.get(1).toString(), notificationTitle, uriMatcher, headers,
                     callbackContext);
         }
 
         public Download(String uriString, String targetFileUri, String notificationTitle,
-                String uriMatcher, CallbackContext callbackContext) {
+                String uriMatcher, List<Map<String, String>> headers, CallbackContext callbackContext) {
             this.uriString = uriString;
             this.setTargetFileUri(targetFileUri);
             this.notificationTitle = notificationTitle;
             this.uriMatcher = uriMatcher;
+            this.headers = headers;
             this.setTempFileUri(Uri.fromFile(new File(android.os.Environment.getExternalStorageDirectory().getPath(),
                     Uri.parse(targetFileUri).getLastPathSegment() + "." + System.currentTimeMillis())).toString());
             this.callbackContext = callbackContext;
@@ -130,6 +138,10 @@ public class BackgroundDownload extends CordovaPlugin {
 
         public String getNotificationTitle() {
             return this.notificationTitle;
+        }
+
+        public List<Map<String, String>> getHeaders() {
+            return this.headers;
         }
 
         public String getUriMatcher() {
@@ -243,6 +255,10 @@ public class BackgroundDownload extends CordovaPlugin {
                 DownloadManager.Request request = new DownloadManager.Request(source);
                 request.setTitle(curDownload.getNotificationTitle());
                 request.setVisibleInDownloadsUi(false);
+
+                for (Map<String, String> header : curDownload.getHeaders()) {
+                    request.addRequestHeader(header.get("Key"), header.get("Value"));
+                }
 
                 // hide notification. Not compatible with current android api.
                 // request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);

@@ -24,7 +24,7 @@ var DownloadOperation = require('./DownloadOperation');
 /**
  * Initializes a new instance of BackgroundDownloader object.
  * Used to configure downloads prior to the actual creation of the download operation using CreateDownload.
- * 
+ *
  * @param {string} uriMatcher The regexp to compare location of the resources with already downloading ones.
  */
 var BackgroundDownloader = function(uriMatcher) {
@@ -38,8 +38,8 @@ var BackgroundDownloader = function(uriMatcher) {
  * @param {File} resultFile The file that the response will be written to.
  * @param {string} notificationTitle The title for downloading in notification.
  */
-BackgroundDownloader.prototype.createDownload = function(uri, resultFile, notificationTitle) {
-    return new DownloadOperation(uri, resultFile, this.uriMatcher, notificationTitle);
+BackgroundDownloader.prototype.createDownload = function(uri, resultFile, notificationTitle, headers) {
+    return new DownloadOperation(uri, resultFile, this.uriMatcher, notificationTitle, headers);
 };
 
 module.exports = BackgroundDownloader;

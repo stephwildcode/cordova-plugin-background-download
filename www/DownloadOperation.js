@@ -30,16 +30,17 @@ var exec = require('cordova/exec'),
  * @param {string} uriMatcher The regexp to compare location of the resources with already downloading ones.
  * @param {string} notificationTitle The title for downloading in notification.
  */
-var DownloadOperation = function (uri, resultFile, uriMatcher, notificationTitle) {
+var DownloadOperation = function (uri, resultFile, uriMatcher, notificationTitle, headers) {
 
     if (uri == null || resultFile == null) {
         throw new Error("missing or invalid argument");
     }
-    
+
     this.uri = uri;
     this.resultFile = resultFile;
     this.uriMatcher = uriMatcher;
     this.notificationTitle = notificationTitle;
+    this.headers = headers;
 };
 
 /**
@@ -51,9 +52,9 @@ DownloadOperation.prototype.startAsync = function() {
         me = this,
         successCallback = function(result) {
 
-            // success callback is used to both report operation progress and 
+            // success callback is used to both report operation progress and
             // as operation completeness handler
-            
+
             if (result && typeof result.progress != 'undefined') {
                 deferral.notify(result.progress);
             } else {
@@ -64,7 +65,7 @@ DownloadOperation.prototype.startAsync = function() {
             deferral.reject(err);
         };
 
-    exec(successCallback, errorCallback, "BackgroundDownload", "startAsync", [this.uri, this.resultFile.toURL(), this.uriMatcher, this.notificationTitle]);
+    exec(successCallback, errorCallback, "BackgroundDownload", "startAsync", [this.uri, this.resultFile.toURL(), this.uriMatcher, this.notificationTitle, this.headers]);
 
     // custom mechanism to trigger stop when user cancels pending operation
     deferral.promise.onCancelled = function () {
