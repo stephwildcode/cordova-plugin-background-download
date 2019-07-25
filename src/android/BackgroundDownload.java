@@ -29,6 +29,7 @@ import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -104,8 +105,17 @@ public class BackgroundDownload extends CordovaPlugin {
                 notificationTitle = args.getString(3);
             }
 
+            List<Map<String, String>> headers = new ArrayList<Map<String, String>>();
             if (args.length() > 4 && !"null".equals(args.getString(4))) {
-                headers = args.get(4);
+                JSONArray headersArray = args.getJSONArray(4);
+                for(int i=0; i<headersArray.length(); i++){
+                    String key = headersArray.getJSONObject(i).getString("Key");
+                    String value = headersArray.getJSONObject(i).getString("Value");
+                    Map<String, String> header = new HashMap<String, String>();
+                    header.put("Key", key);
+                    header.put("Value", value);
+                    headers.add(header);
+                }
             }
 
             return new Download(args.get(0).toString(), args.get(1).toString(), notificationTitle, uriMatcher, headers,
