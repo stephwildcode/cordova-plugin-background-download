@@ -187,7 +187,7 @@ public class BackgroundDownload extends CordovaPlugin {
 
     private SparseArray<PermissionsRequest> permissionRequests;
 
-    private HashMap<String, Download> activeDownloads = new HashMap<>();
+    private HashMap<String, Download> activeDownloads = new HashMap<String, Download>();
 
     private DownloadManager getDownloadManager() {
         return (DownloadManager) cordova.getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
@@ -197,7 +197,7 @@ public class BackgroundDownload extends CordovaPlugin {
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
 
-        permissionRequests = new SparseArray<>();
+        permissionRequests = new SparseArray<PermissionsRequest>();
     }
 
     @Override
@@ -436,7 +436,7 @@ public class BackgroundDownload extends CordovaPlugin {
         int idxId = cur.getColumnIndex(DownloadManager.COLUMN_ID);
         int idxUri = cur.getColumnIndex(DownloadManager.COLUMN_URI);
         int idxLocalUri = cur.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI);
-        
+
         final Pattern pattern = downloadItem.getUriMatcher() != null && !"".equals(downloadItem.getUriMatcher())
             ? Pattern.compile(downloadItem.getUriMatcher()) : null;
 
@@ -446,7 +446,7 @@ public class BackgroundDownload extends CordovaPlugin {
             if (pattern != null) {
                 Matcher mForExistingUri = pattern.matcher(existingDownloadUri);
                 Matcher mForNewUri = pattern.matcher(downloadItem.getUriString());
-                uriMatches = mForExistingUri.find() && mForNewUri.find() && 
+                uriMatches = mForExistingUri.find() && mForNewUri.find() &&
                         mForExistingUri.group().equals(mForNewUri.group());
             }
             if (uriMatches || downloadItem.getUriString().equals(cur.getString(idxUri))) {
