@@ -69,10 +69,10 @@
         }
 
         if (!downloadItem) {
-            NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:uri]];
+            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:uri]];
 
             for (NSDictionary *header in headers) {
-                [request setValue:header["Value"] forHTTPHeaderField:header["Key"]];
+                [request setValue:header[@"Value"] forHTTPHeaderField:header[@"Key"]];
             }
 
             downloadItem = [[Download alloc] initWithPath:[command.arguments objectAtIndex:1]
