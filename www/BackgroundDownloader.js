@@ -39,8 +39,8 @@ var BackgroundDownloader = function(uriMatcher) {
  * @param {string} notificationTitle The title for downloading in notification.
  * @param {string} userAgent A custom user agent. Windows only. The default Edge user agent will be used if not specified.
  */
-BackgroundDownloader.prototype.createDownload = function(uri, resultFile, notificationTitle, userAgent) {
-    return new DownloadOperation(uri, resultFile, this.uriMatcher, notificationTitle, userAgent);
+BackgroundDownloader.prototype.createDownload = function(uri, resultFile, notificationTitle, headers, userAgent) {
+    return new DownloadOperation(uri, resultFile, this.uriMatcher, notificationTitle, headers, userAgent);
 };
 
 module.exports = BackgroundDownloader;

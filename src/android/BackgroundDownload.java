@@ -27,6 +27,9 @@ import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -89,6 +92,7 @@ public class BackgroundDownload extends CordovaPlugin {
         private Uri targetFileUri;
         private Uri tempFileUri;
         private String notificationTitle;
+        private List<Map<String, String>> headers;
         private String uriMatcher;
         private String uriString;
         private CallbackContext callbackContext; // The callback context from which we were invoked.
@@ -107,16 +111,30 @@ public class BackgroundDownload extends CordovaPlugin {
                 notificationTitle = args.getString(3);
             }
 
-            return new Download(args.get(0).toString(), args.get(1).toString(), notificationTitle, uriMatcher,
+            List<Map<String, String>> headers = new ArrayList<Map<String, String>>();
+            if (args.length() > 4 && !"null".equals(args.getString(4))) {
+                JSONArray headersArray = args.getJSONArray(4);
+                for(int i=0; i<headersArray.length(); i++){
+                    String key = headersArray.getJSONObject(i).getString("Key");
+                    String value = headersArray.getJSONObject(i).getString("Value");
+                    Map<String, String> header = new HashMap<String, String>();
+                    header.put("Key", key);
+                    header.put("Value", value);
+                    headers.add(header);
+                }
+            }
+
+            return new Download(args.get(0).toString(), args.get(1).toString(), notificationTitle, uriMatcher, headers,
                     callbackContext);
         }
 
         public Download(String uriString, String targetFileUri, String notificationTitle,
-                String uriMatcher, CallbackContext callbackContext) {
+                String uriMatcher, List<Map<String, String>> headers, CallbackContext callbackContext) {
             this.uriString = uriString;
             this.setTargetFileUri(targetFileUri);
             this.notificationTitle = notificationTitle;
             this.uriMatcher = uriMatcher;
+            this.headers = headers;
             this.setTempFileUri(Uri.fromFile(new File(android.os.Environment.getExternalStorageDirectory().getPath(),
                     Uri.parse(targetFileUri).getLastPathSegment() + "." + System.currentTimeMillis())).toString());
             this.callbackContext = callbackContext;
@@ -136,6 +154,10 @@ public class BackgroundDownload extends CordovaPlugin {
 
         public String getNotificationTitle() {
             return this.notificationTitle;
+        }
+
+        public List<Map<String, String>> getHeaders() {
+            return this.headers;
         }
 
         public String getUriMatcher() {
@@ -193,7 +215,7 @@ public class BackgroundDownload extends CordovaPlugin {
 
     private SparseArray<PermissionsRequest> permissionRequests;
 
-    private HashMap<String, Download> activeDownloads = new HashMap<>();
+    private HashMap<String, Download> activeDownloads = new HashMap<String, Download>();
 
     private DownloadManager getDownloadManager() {
         return (DownloadManager) cordova.getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
@@ -203,7 +225,7 @@ public class BackgroundDownload extends CordovaPlugin {
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
 
-        permissionRequests = new SparseArray<>();
+        permissionRequests = new SparseArray<PermissionsRequest>();
     }
 
     @Override
@@ -259,6 +281,10 @@ public class BackgroundDownload extends CordovaPlugin {
                 DownloadManager.Request request = new DownloadManager.Request(source);
                 request.setTitle(curDownload.getNotificationTitle());
                 request.setVisibleInDownloadsUi(false);
+
+                for (Map<String, String> header : curDownload.getHeaders()) {
+                    request.addRequestHeader(header.get("Key"), header.get("Value"));
+                }
 
                 // Use the cookie from the webview, so the session cookie is shared
                 request.addRequestHeader("Cookie", this.webView.getCookieManager().getCookie(curDownload.getUriString()));

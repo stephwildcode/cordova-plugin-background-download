@@ -59,13 +59,23 @@
         NSString *uri = [command.arguments objectAtIndex:0];
         Download *downloadItem = [activeDownloads valueForKey:uri];
         NSString *uriMatcher = nil;
+        NSArray *headers;
         if (command.arguments.count > 2 &&
             ![[command.arguments objectAtIndex:2] isEqual:[NSNull null]]) {
             uriMatcher = [command.arguments objectAtIndex:2];
         }
+        if (command.arguments.count > 4 &&
+            ![[command.arguments objectAtIndex:4] isEqual:[NSNull null]]) {
+            headers = [command.arguments objectAtIndex:4];
+        }
 
         if (!downloadItem) {
-            NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:uri]];
+            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:uri]];
+
+            for (NSDictionary *header in headers) {
+                [request setValue:header[@"Value"] forHTTPHeaderField:header[@"Key"]];
+            }
+
             downloadItem = [[Download alloc] initWithPath:[command.arguments objectAtIndex:1]
                                                       uri:uri
                                                uriMatcher:uriMatcher
