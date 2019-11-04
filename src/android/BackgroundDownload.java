@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.nio.channels.FileChannel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
