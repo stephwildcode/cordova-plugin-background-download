@@ -24,9 +24,11 @@ var DownloadOperation = require('./DownloadOperation');
 /**
  * Initializes a new instance of BackgroundDownloader object.
  * Used to configure downloads prior to the actual creation of the download operation using CreateDownload.
+ *
+ * @param {string} uriMatcher The regexp to compare location of the resources with already downloading ones.
  */
-var BackgroundDownloader = function() {
-
+var BackgroundDownloader = function(uriMatcher) {
+    this.uriMatcher = uriMatcher;
 };
 
 /**
@@ -34,11 +36,11 @@ var BackgroundDownloader = function() {
  *
  * @param {string} uri The location of the resource.
  * @param {File} resultFile The file that the response will be written to.
- * @param {string} appTitle The title of the app, which will be shown in notification
+ * @param {string} notificationTitle The title for downloading in notification.
  * @param {string} userAgent A custom user agent. Windows only. The default Edge user agent will be used if not specified.
  */
-BackgroundDownloader.prototype.createDownload = function(uri, resultFile, appTitle, userAgent) {
-    return new DownloadOperation(uri, resultFile, appTitle, userAgent);
+BackgroundDownloader.prototype.createDownload = function(uri, resultFile, notificationTitle, userAgent) {
+    return new DownloadOperation(uri, resultFile, this.uriMatcher, notificationTitle, userAgent);
 };
 
 module.exports = BackgroundDownloader;

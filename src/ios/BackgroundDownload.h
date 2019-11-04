@@ -6,9 +6,9 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License. You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -24,23 +24,22 @@
 // the download wilcontinue until it completes.
 @interface BackgroundDownload : CDVPlugin <NSURLSessionDownloadDelegate>
 
-
-@property NSMutableDictionary * downloadList;
-
 @property (nonatomic) NSURLSession *session;
-//@property (nonatomic) NSURLSessionDownloadTask *downloadTask;
 
 - (void)startAsync:(CDVInvokedUrlCommand*)command;
 - (void)stop:(CDVInvokedUrlCommand*)command;
 
 @end
 
+@interface Download : NSObject
 
-@interface DownloadHolder : NSObject
-
-@property NSString *targetFile;
-@property NSString *downloadUri;
+@property NSString *error;
+@property NSString *filePath;
+@property NSString *uriString;
+@property NSString *uriMatcher;
 @property NSString *callbackId;
-@property NSURLSessionDownloadTask *downloadTask;
+@property (nonatomic) NSURLSessionDownloadTask *task;
+
+- (id) initWithPath:(NSString *)filePath uri:(NSString *)uri uriMatcher:(NSString *)uriMatcher callbackId:(NSString *)callbackId task:(NSURLSessionDownloadTask *)task;
 
 @end
