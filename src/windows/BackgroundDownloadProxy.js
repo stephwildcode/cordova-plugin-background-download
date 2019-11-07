@@ -7,7 +7,7 @@ module.exports = {
                  * A custom user agent. The default Edge user agent will be used if not specified.
                  * @type {string}
                  */
-                userAgent = args[4],
+                userAgent = args[5],
                 /**
                  * The download operation.
                  * @type {Windows.Networking.BackgroundTransfer.DownloadOperation}
