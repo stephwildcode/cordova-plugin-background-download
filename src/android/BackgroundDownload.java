@@ -111,8 +111,6 @@ public class BackgroundDownload extends CordovaPlugin {
             this.setTargetFileUri(targetFileUri);
             this.notificationTitle = notificationTitle;
             this.uriMatcher = uriMatcher;
-            this.setTempFileUri(Uri.fromFile(new File(android.os.Environment.getExternalStorageDirectory().getPath(),
-                    Uri.parse(targetFileUri).getLastPathSegment() + "." + System.currentTimeMillis())).toString());
             this.callbackContext = callbackContext;
         }
 
@@ -224,6 +222,9 @@ public class BackgroundDownload extends CordovaPlugin {
         }
 
         Download curDownload = Download.create(args, callbackContext);
+        // set temp file uri
+        curDownload.setTempFileUri(Uri.fromFile(new File(cordova.getContext().getExternalFilesDir("Downloads").getPath(),
+            curDownload.targetFileUri.getLastPathSegment() + "." + System.currentTimeMillis())).toString());
 
         if (activeDownloads.containsKey(curDownload.getUriString())) {
             return;
@@ -436,7 +437,7 @@ public class BackgroundDownload extends CordovaPlugin {
         int idxId = cur.getColumnIndex(DownloadManager.COLUMN_ID);
         int idxUri = cur.getColumnIndex(DownloadManager.COLUMN_URI);
         int idxLocalUri = cur.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI);
-        
+
         final Pattern pattern = downloadItem.getUriMatcher() != null && !"".equals(downloadItem.getUriMatcher())
             ? Pattern.compile(downloadItem.getUriMatcher()) : null;
 
@@ -446,7 +447,7 @@ public class BackgroundDownload extends CordovaPlugin {
             if (pattern != null) {
                 Matcher mForExistingUri = pattern.matcher(existingDownloadUri);
                 Matcher mForNewUri = pattern.matcher(downloadItem.getUriString());
-                uriMatches = mForExistingUri.find() && mForNewUri.find() && 
+                uriMatches = mForExistingUri.find() && mForNewUri.find() &&
                         mForExistingUri.group().equals(mForNewUri.group());
             }
             if (uriMatches || downloadItem.getUriString().equals(cur.getString(idxUri))) {
