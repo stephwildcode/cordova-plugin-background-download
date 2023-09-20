@@ -249,13 +249,8 @@ public class BackgroundDownload extends CordovaPlugin {
     }
 
     private void startAsync(JSONArray args, CallbackContext callbackContext) throws JSONException {
-        if (!checkPermissions(args, callbackContext)) {
-            return;
-        }
-
         Download curDownload = Download.create(args, callbackContext);
-        // set temp file uri
-        curDownload.setTempFileUri(Uri.fromFile(new File(cordova.getContext().getExternalFilesDir("Downloads").getPath(),
+        curDownload.setTempFileUri(Uri.fromFile(new File(cordova.getContext().getExternalCacheDir().getPath(),
                 curDownload.targetFileUri.getLastPathSegment() + "." + System.currentTimeMillis())).toString());
 
         if (activeDownloads.containsKey(curDownload.getUriString())) {
@@ -554,35 +549,6 @@ public class BackgroundDownload extends CordovaPlugin {
                     throw new InterruptedIOException("Copying terminated");
                 }
             }
-        }
-    }
-
-    private boolean checkPermissions(JSONArray args, CallbackContext callbackContext) {
-        if (!PermissionHelper.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            permissionRequests.put(permissionRequests.size(), new PermissionsRequest(args, callbackContext));
-            PermissionHelper.requestPermission(this, permissionRequests.size() - 1, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            return false;
-        }
-
-        return true;
-    }
-
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        final PermissionsRequest permissionsRequest = permissionRequests.get(requestCode);
-        permissionRequests.remove(requestCode);
-        if (permissionsRequest == null) {
-            return;
-        }
-
-        if (grantResults.length < 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-            permissionsRequest.callbackContext.error("PERMISSION_DENIED");
-            return;
-        }
-
-        try {
-            startAsync(permissionsRequest.rawArgs, permissionsRequest.callbackContext);
-        } catch (JSONException ex) {
-            permissionsRequest.callbackContext.error(ex.getMessage());
         }
     }
 }
