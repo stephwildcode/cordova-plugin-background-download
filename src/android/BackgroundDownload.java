@@ -39,24 +39,18 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
-import org.apache.cordova.CordovaWebView;
-import org.apache.cordova.PermissionHelper;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.Manifest;
 import android.app.DownloadManager;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.storage.StorageManager;
 import android.util.Log;
-import android.util.SparseArray;
 
 /**
  * Based on DownloadManager which is intended to be used for long-running HTTP downloads. Support of Android 2.3. (API 9) and later
@@ -72,17 +66,6 @@ public class BackgroundDownload extends CordovaPlugin {
     private static final long DOWNLOAD_ID_UNDEFINED = -1;
     private static final long DOWNLOAD_PROGRESS_UPDATE_TIMEOUT = 500;
     private static final int BUFFER_SIZE = 16777216; //16MB
-
-    private static class PermissionsRequest {
-
-        private final JSONArray rawArgs;
-        private final CallbackContext callbackContext;
-
-        private PermissionsRequest(JSONArray rawArgs, CallbackContext callbackContext) {
-            this.rawArgs = rawArgs;
-            this.callbackContext = callbackContext;
-        }
-    }
 
     private static class Download {
 
@@ -208,19 +191,10 @@ public class BackgroundDownload extends CordovaPlugin {
         }
     }
 
-    private SparseArray<PermissionsRequest> permissionRequests;
-
     private final HashMap<String, Download> activeDownloads = new HashMap<>();
 
     private DownloadManager getDownloadManager() {
         return (DownloadManager) cordova.getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
-    }
-
-    @Override
-    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
-        super.initialize(cordova, webView);
-
-        permissionRequests = new SparseArray<>();
     }
 
     @Override
