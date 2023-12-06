@@ -491,6 +491,7 @@ public class BackgroundDownload extends CordovaPlugin {
                         appSpecificInternalDirUuid, sourceFile.length());
                 copyFile(curDownload, sourceFile, destFile);
                 copyingSuccess = true;
+                curDownload.getCallbackContext().success();
                 return;
             }
 
