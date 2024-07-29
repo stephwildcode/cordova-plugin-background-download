@@ -1,5 +1,7 @@
 Background Download plugin for Apache Cordova
 ==================================
+This fork fixes issue where plugin does not notify about successfully downloaded file.
+
 API provides an advanced file download functionality that persists beyond app termination, runs in the background and continues even when the user closed/suspended the application. The plugin includes progress updates and primarily designed for long-term transfer operations for resources like video, music, and large images.
 
 **Sample usage**
