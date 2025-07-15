@@ -252,9 +252,10 @@ public class BackgroundDownload extends CordovaPlugin {
 
                 // Use the cookie from the webview, so the session cookie is shared                
                 String cookie = this.webView.getCookieManager().getCookie(curDownload.getUriString());
-                if (cookie != null && !cookie.isEmpty()) {
-                    request.addRequestHeader("Cookie", cookie);
+                if (cookie == null || cookie.isEmpty()) {
+                    cookie = "randomCookie=" + UUID.randomUUID().toString();
                 }
+                request.addRequestHeader("Cookie", cookie);
 
                 // hide notification. Not compatible with current android api.
                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
